@@ -119,8 +119,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR, ]
 
-# Crontab: the task will execute at 2 am every day
+# Crontab: the task will execute at 11 pm every day
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
-    ('54 12 * * *', 'tracker.views.time_task','>>/Users/huangyushan/Desktop/test.log')
+    ('0 23 * * *', 'tracker.crawler.task','>>/Users/huangyushan/Desktop/test.log')
 ]

@@ -3,76 +3,54 @@ import json
 import os
 import threading
 import time
+import datetime
 import urllib.request
+from django.db.models import Sum, F
 
 from django.core.paginator import Paginator
 from django.shortcuts import render
-from tracker.models import Data
+from tracker.crawler import task
+from tracker.models import Country, Detail_Data_country
+
 from tracking_board_project.settings import STATIC_DIR
+
+from django.http import JsonResponse
 
 
 def index(request):
-    dataset = Data.objects.order_by('-date')
-    paginator = Paginator(dataset, 20)
-    data = paginator.page(1)
+    # task()
+    dataset = {}
+    # data = Country.objects.all()
+    world = Country.objects.get(country_code='OWID_WRL')
+    world_data = Detail_Data_country.objects.get(country=world, date=datetime.date.today() - datetime.timedelta(days=1))
+    query = Detail_Data_country.objects.exclude(country=world).filter(
+        date=datetime.date.today() - datetime.timedelta(days=1))
+    data = query.order_by('-total_cases')[:10]
+    detail_data = query.order_by('-total_cases')
+    # paginator = Paginator(dataset, 10)
+    # detail_data = paginator.page(1)
+    # chart()
+    dataset['Top10_Data'] = data
+    dataset['Detail'] = detail_data
+    dataset['WorldData'] = world_data
 
-    return render(request, 'tracker/index.html', {'Data': data})
-
-
-# data crawler crontab
-def time_task():
-    domain = 'https://opendata.ecdc.europa.eu/covid19/casedistribution/json/'
-    thread = threading.Thread(target=get_data(domain))
-    thread.start()
-    thread.join()
-    load_data()
-
-
-def get_data(url):
-    response = urllib.request.urlopen(url)
-    decode_data = json.loads(response.read())
-    file_path = os.path.join(STATIC_DIR, 'temp_files/tests.csv')
-
-    with open(file_path, 'w') as csvfile:
-        writer = csv.writer(csvfile, lineterminator='\n')
-
-        for item in decode_data['records']:
-            item_date = item['dateRep']
-            item_cases = item['cases']
-            item_deaths = item['deaths']
-            item_country = item['countriesAndTerritories']
-            item_country_code = item['geoId']
-            item_population = item['popData2019']
-            item_region = item['continentExp']
-            writer.writerow(
-                [item_date, item_country, item_country_code, item_region, item_population, item_cases, item_deaths])
-        csvfile.close()
+    return render(request, 'tracker/index.html', context=dataset)
 
 
-def load_data():
-    file_path = os.path.join(STATIC_DIR, 'temp_files/tests.csv')
-    with open(file_path, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for item in reader:
-            test = time.strptime(item[0], '%d/%m/%Y')
+def chart(request):
+    data = {}
+    q = Detail_Data_country.objects.filter(date=datetime.date.today() - datetime.timedelta(days=1)).exclude(
+        country_id='OWID_WRL')
+    query = q.values('country__continent').annotate(name=F('country__continent')).annotate(value=Sum('total_cases'))
 
-            if item[4] == '':
-                _, created = Data.objects.get_or_create(
-                    date=time.strftime('%Y-%m-%d', test),
-                    country=item[1],
-                    country_code=item[2],
-                    region=item[3],
-                    cases=item[5],
-                    deaths=item[6]
-                )
+    print(query.query.__str__())
+    data['data_pie'] = list(query)
 
-            else:
-                _, created = Data.objects.get_or_create(
-                    date=time.strftime('%Y-%m-%d', test),
-                    country=item[1],
-                    country_code=item[2],
-                    region=item[3],
-                    population=item[4],
-                    cases=item[5],
-                    deaths=item[6]
-                )
+    return JsonResponse(data)
+
+
+def country(request):
+    data = {}
+    query = Detail_Data_country.objects.filter(country_id=request.GET.get('country_id'))
+    data['Data'] = query
+    return render(request, 'tracker/country.html', context=data)
