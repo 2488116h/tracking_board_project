@@ -16,21 +16,21 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def task():
-    domain = 'https://covid.ourworldindata.org/data/owid-covid-data.json'
-    thread = threading.Thread(target=get_country_data(domain))
-    thread.start()
-    thread.join()
+    # domain = 'https://covid.ourworldindata.org/data/owid-covid-data.json'
+    # thread = threading.Thread(target=get_country_data(domain))
+    # thread.start()
+    # thread.join()
     store_country_data()
-    detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
-    detail_data.start()
-    detail_data.join()
-    store_detail_data()
+    # detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
+    # detail_data.start()
+    # detail_data.join()
+    # store_detail_data()
 
 
 def get_country_data(url):
     response = urllib.request.urlopen(url)
     decode_data = json.loads(response.read())
-    file_path = os.path.join(STATIC_DIR, 'temp_files/new.csv')
+    file_path = os.path.join(STATIC_DIR, 'temp_files/country.csv')
 
     with open(file_path, 'w') as csvfile:
         writer = csv.writer(csvfile, lineterminator='\n')
@@ -62,7 +62,7 @@ def get_country_data(url):
 
 
 def store_country_data():
-    file_path = os.path.join(STATIC_DIR, 'temp_files/new.csv')
+    file_path = os.path.join(STATIC_DIR, 'temp_files/country.csv')
     with open(file_path, 'r') as csvfile:
         reader = csv.reader(csvfile)
         for item in reader:
@@ -115,7 +115,7 @@ def store_detail_data():
                 },
             )
             print(item[0] + item[3] + 'done')
-        print('Finished!')
+        print('Finished!'+ time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
 
 # if __name__ == '__main__':
 #     task()

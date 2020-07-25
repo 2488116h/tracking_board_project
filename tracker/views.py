@@ -1,30 +1,28 @@
-import csv
-import json
-import os
-import threading
-import time
+
 import datetime
 import urllib.request
 from django.db.models import Sum, F
 
 from django.core.paginator import Paginator
 from django.shortcuts import render
-from tracker.crawler import task
-from tracker.models import Country, Detail_Data_country
 
-from tracking_board_project.settings import STATIC_DIR
+from tracker.models import Country, Detail_Data_country
+from tracker.crawler import task
 
 from django.http import JsonResponse
 
 
 def index(request):
-    # task()
+    task()
     dataset = {}
     # data = Country.objects.all()
     world = Country.objects.get(country_code='OWID_WRL')
-    world_data = Detail_Data_country.objects.get(country=world, date=datetime.date.today() - datetime.timedelta(days=1))
+    world_data = Detail_Data_country.objects.filter(country=world).order_by('-date')[:1]
     query = Detail_Data_country.objects.exclude(country=world).filter(
-        date=datetime.date.today() - datetime.timedelta(days=1))
+        date=datetime.date.today())
+    if not query:
+        query = Detail_Data_country.objects.exclude(country=world).filter(
+            date=datetime.date.today() - datetime.timedelta(days=1))
     data = query.order_by('-total_cases')[:10]
     detail_data = query.order_by('-total_cases')
     # paginator = Paginator(dataset, 10)
@@ -42,15 +40,28 @@ def chart(request):
     q = Detail_Data_country.objects.filter(date=datetime.date.today() - datetime.timedelta(days=1)).exclude(
         country_id='OWID_WRL')
     query = q.values('country__continent').annotate(name=F('country__continent')).annotate(value=Sum('total_cases'))
-
-    print(query.query.__str__())
+    # print(query.query.__str__())
     data['data_pie'] = list(query)
-
     return JsonResponse(data)
 
 
-def country(request):
+def country(request,country_id_slug):
     data = {}
-    query = Detail_Data_country.objects.filter(country_id=request.GET.get('country_id'))
+    query = Detail_Data_country.objects.filter(country_id=country_id_slug)
     data['Data'] = query
+    data['LatestData'] = query.order_by('-date')[:1]
+    data['country_id'] = Country.objects.get(country_code=country_id_slug)
+
     return render(request, 'tracker/country.html', context=data)
+
+
+def country_data(request,country_id_slug):
+    data = {}
+    end_date = datetime.date.today()
+    start_date = end_date - datetime.timedelta(days=200)
+    # print(request)
+    query = Detail_Data_country.objects.filter(country_id=country_id_slug,date__range=(start_date, end_date))
+    fields = query.values('country_id', 'date', 'cases', 'deaths', 'total_cases', 'total_deaths')
+
+    data['data'] = list(fields)
+    return JsonResponse(data)

@@ -122,5 +122,5 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 # Crontab: the task will execute at 11 pm every day
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
-    ('0 23 * * *', 'tracker.crawler.task','>>/Users/huangyushan/Desktop/test.log')
+    ('0 */4 * * *', 'tracker.crawler.task','>>/Users/huangyushan/Desktop/test.log')
 ]

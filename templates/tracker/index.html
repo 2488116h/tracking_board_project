@@ -13,6 +13,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+  <script src="http://cdn.highcharts.com.cn/highmaps/modules/map.js"></script>
 
 </head>
 
@@ -25,35 +27,37 @@
 
   <div class="container">
     <div class="row pt-4 text-center">
+      {% for data in WorldData %}
       <div class="col-md-3 panel panel-default ">
         <div class="panel-body border bg-light m-4">
           <h4>
             Cases
           </h4>
           <h4>
-            {{WorldData.cases}}
+            {{data.cases}}
           </h4>
         </div>
       </div>
       <div class="col-md-3 panel panel-default">
         <div class="panel-body border bg-light m-4 ">
           <h4>Deaths</h4>
-          <h4>{{WorldData.deaths}}</h4>
+          <h4>{{data.deaths}}</h4>
 
         </div>
       </div>
       <div class="col-md-3 panel panel-default  ">
         <div class="panel-body border bg-light m-4 ">
           <h4>Total Cases</h4>
-          <h4>{{WorldData.total_cases}}</h4>
+          <h4>{{data.total_cases}}</h4>
         </div>
       </div>
       <div class="col-md-3 panel panel-default ">
         <div class="panel-body border bg-light m-4 ">
           <h4>Total Deaths</h4>
-          <h4>{{WorldData.total_deaths}}</h4>
+          <h4>{{data.total_deaths}}</h4>
         </div>
       </div>
+      {% endfor %}
     </div>
 
     <div class="row ">
@@ -72,7 +76,8 @@
           <tbody>
             {% for data in Top10_Data %}
             <tr>
-              <td>{{data.country.country_name}}</td>
+              <td><a href="{%url 'tracker:country' data.country.country_code %}">{{data.country.country_name}}</a>
+              </td>
               <!-- <td>{{data.country.continent}}</td> -->
               <!-- <td>{{data.cases}}</td>
             <td>{{data.deaths}}</td> -->
@@ -84,9 +89,9 @@
         </table>
 
       </div>
-      <div id='heatmap' class="col-md-7">
+      <div id='map' class="col-md-7">
         <div class="bg-light" style="background-color: #FFF2CC;">
-          heat map
+          <!-- heat map -->
         </div>
 
       </div>
@@ -344,6 +349,111 @@
         }, 'json')
         console.log(myChart)
 
+
+      </script>
+
+      <script>
+        //动态加载 Script
+        function loadScript(url, callback) {
+          var script = document.createElement("script");
+          script.type = "text/javascript";
+          if (script.readyState) {  //IE
+            script.onreadystatechange = function () {
+              if (script.readyState == "loaded" ||
+                script.readyState == "complete") {
+                script.onreadystatechange = null;
+                callback();
+              }
+            };
+          } else {  //Others
+            script.onload = function () {
+              callback();
+            };
+          }
+          script.src = url;
+          document.getElementsByTagName("head")[0].appendChild(script);
+        }
+        /*
+         * 获取链接的 map 参数
+         * map 参数值为地图的路径，所有文件路径参考 https://img.hcharts.cn/mapdata/index.html
+         */
+        function getMapName(name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"),
+            r = window.location.search.substr(1).match(reg),
+            defaultMap = {
+              path: 'custom/world',
+              name: 'Covid-19 World Map',
+              
+            };
+          if (r !== null) {
+            var path = unescape(r[2]);
+            for (var key in Highcharts.mapsInfo) {
+              if (Highcharts.mapsInfo[key][path]) {
+                return {
+                  path: path,
+                  name: Highcharts.mapsInfo[key][path].name,
+                  cname: Highcharts.mapsInfo[key][path].chineseName || ''
+                };
+              }
+            }
+          }
+          return defaultMap;
+        }
+        // 地图路径，参考 https://img.hcharts.cn/mapdata/index.html
+        var map = getMapName('map'),
+         url = '//img.hcharts.cn/mapdata/' + map.path + '.js';
+        // var url = '/static/js/world.js';
+         console.log(url)
+         
+        // 动态加载地图数据文件并生成图表。
+        loadScript(url, function () {
+          // 生成随机数据
+          var mapdata = Highcharts.maps['custom/world'],
+            data = [];
+          Highcharts.each(mapdata.features, function (md, index) {
+            data.push({
+              'hc-key': md.properties['hc-key'],
+              value: Math.floor((Math.random() * 100) + 1)  // 生成 1 ~ 100 随机值
+            });
+          });
+          console.log(data)
+          // 初始化图表
+          $('#map').highcharts('Map', {
+            title: {
+              text: 'Covid-19 World Map'
+            },
+            mapNavigation: {
+              enabled: true,
+              buttonOptions: {
+                verticalAlign: 'bottom',
+                align:'right'
+              }
+            },
+            colorAxis: {
+              min: 0,
+              stops: [
+                [0, '#EFEFFF'],
+                [0.5, Highcharts.getOptions().colors[0]],
+                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]
+              ]
+            },
+            series: [{
+              data: data,
+              mapData: mapdata,
+              joinBy: 'hc-key',
+              name: 'Random',
+              states: {
+                hover: {
+                  color: '#a4edba'
+                }
+              },
+              dataLabels: {
+                enabled: false,
+                format: '{point.name}'
+              }
+            }]
+          });
+        });
 
       </script>
 

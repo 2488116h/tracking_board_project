@@ -1,99 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Country</title>
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <link rel="stylesheet" href="/static/css/nav.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/nav.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 
 </head>
+
 <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 m-1 px-3" href="#">COVID-19 TRACKER</a>
+        <a class="navbar-brand col-md-3 col-lg-2 m-1 px-3" href="/tracker/">COVID-19 TRACKER</a>
         <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-    
+
     </nav>
     <div class="container">
         <div class="row pt-4 text-center">
+            {% for data in LatestData %}
             <div class="col-md-2 panel panel-default ">
-              <div class="panel-body border bg-light">
-                <h4>
-                  Cases
-                </h4>
-                <h4>
-                  {{WorldData.cases}}
-                </h4>
-              </div>
+                <div class="panel-body border bg-light">
+                    <h4>
+                        Cases
+                    </h4>
+                    <h4>
+                        {{data.cases}}
+                    </h4>
+                </div>
             </div>
             <div class="col-md-2 panel panel-default">
-              <div class="panel-body border bg-light">
-                <h4>Deaths</h4>
-                <h4>{{WorldData.deaths}}</h4>
-      
-              </div>
+                <div class="panel-body border bg-light">
+                    <h4>Deaths</h4>
+                    <h4>{{data.deaths}}</h4>
+
+                </div>
             </div>
             <div class="col-md-2 panel panel-default  ">
-              <div class="panel-body border bg-light">
-                <h4>Total Cases</h4>
-                <h4>{{WorldData.total_cases}}</h4>
-              </div>
-            </div>
-            <div class="col-md-2 panel panel-default ">
-              <div class="panel-body border bg-light ">
-                <h4>Total Deaths</h4>
-                <h4>{{WorldData.total_deaths}}</h4>
-              </div>
+                <div class="panel-body border bg-light">
+                    <h4>Total Cases</h4>
+                    <h4>{{data.total_cases}}</h4>
+                </div>
             </div>
             <div class="col-md-2 panel panel-default ">
                 <div class="panel-body border bg-light ">
-                  <h4>Deaths Rate</h4>
-                  <h4>{{WorldData.total_deaths}}</h4>
+                    <h4>Total Deaths</h4>
+                    <h4>{{data.total_deaths}}</h4>
                 </div>
-              </div>
-          </div>  
-
-        <div id="main" style="width: 600px;height:400px;"></div>
+            </div>
+            <!-- <div class="col-md-2 panel panel-default ">
+                <div class="panel-body border bg-light ">
+                  <h4>Death Rate</h4>
+                  <h4>{{LatestData.country.cvd_death_rate}}</h4>
+                </div>
+            </div> -->
+            {% endfor %}
+        </div>
+        <div class="row pt-4">
+            <div id="main" class="col-md-7" style="height:400px;"></div>
+            <div id="new_case" class="col-md-5" style="height:400px;"></div>
+        </div>
+        <div class="row">
+            <div id="total_death" class="col-md-7" style="height:400px;"></div>
+            <div id="new_death" class="col-md-5" style="height:400px;"></div>
+        </div>
+       
 
     </div>
-   
     <script type="text/javascript">
 
-        var myChart = echarts.init(document.getElementById('main'));
+        var totalCaseChart = echarts.init(document.getElementById('main'));
+        var newCaseChart = echarts.init(document.getElementById('new_case'));
+        var totalDeathChart = echarts.init(document.getElementById('total_death'));
+        var newDeathChart = echarts.init(document.getElementById('new_death'));
+       
+        // console.log(myChart)
+        $.get('/tracker/country_detail/{{country_id.country_code}}/', function (data) {
+            var date = []
+            var total_cases_value = []
+            var new_case_value = []
+            var total_deaths_value=[]
+            var new_death_value = []
+            console.log(data)
+            for (let index = 0; index < data.data.length; index++) {
+                const element = data.data[index];
+                date[index] = element.date;
+                total_cases_value[index] = element.total_cases;
+                new_case_value[index] = element.cases;
+                total_deaths_value[index] =element.total_deaths;
+                new_death_value[index] = element.deaths;
+
+            }
+
+            totalCaseChart.setOption({
+                title: {
+                    text: 'Total Cases',
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['Total Cases']
+                },
+                xAxis: {
+                    type: 'category',
+                    data: date
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'total cases'
+                    }
+                    ],
+                series: [
+                    {
+                        name: 'Total Cases',
+                        type: 'line',
+                        smooth: true,
+                        data: total_cases_value
+                    }]
+            })
+            newCaseChart.setOption({
+                title: {
+                    text: 'New Case',
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['New Case']
+                },
+                xAxis: {
+                    type: 'category',
+                    data: date
+                },
+                yAxis: {
+                        type: 'value',
+                        name: 'new case'
+                    },
+                series: [
+                    {
+                        name: 'New Case',
+                        type: 'bar',
+                        data: new_case_value
+
+                    }]
+            })
+            totalDeathChart.setOption({
+                 title: {
+                    text: 'Total Deaths',
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['Total Deaths']
+                },
+                xAxis: {
+                    type: 'category',
+                    data: date
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'total deaths'
+                    }
+                    ],
+                series: [
+                    {
+                        name: 'Total Deaths',
+                        type: 'line',
+                        smooth: true,
+                        data: total_deaths_value
+                    }]
+
+            })
+            newDeathChart.setOption({
+                title: {
+                    text: 'New Death',
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['New Death']
+                },
+                xAxis: {
+                    type: 'category',
+                    data: date
+                },
+                yAxis: {
+                        type: 'value',
+                        name: 'new death'
+                    },
+                series: [
+                    {
+                        name: 'New Death',
+                        type: 'bar',
+                        data: new_death_value
+
+                    }]
+
+            })
+
+        }, 'json')
+      //  console.log(myChart)
 
 
-        var option = {
-            title: {
-                text: '第一个 ECharts 实例'
-            },
-            tooltip: {},
-            legend: {
-                data:['销量']
-            },
-            xAxis: {
-                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","socks"]
-            },
-            yAxis: {},
-            series: [{
-                name: '销量',
-                type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
-            }]
-        };
-
-        myChart.setOption(option);
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-    crossorigin="anonymous"></script>
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
 
 
 </body>
+
 </html>
