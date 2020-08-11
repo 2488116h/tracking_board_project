@@ -20,11 +20,11 @@ def task():
     # thread = threading.Thread(target=get_country_data(domain))
     # thread.start()
     # thread.join()
-    store_country_data()
-    # detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
-    # detail_data.start()
-    # detail_data.join()
-    # store_detail_data()
+    # store_country_data()
+    detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
+    detail_data.start()
+    detail_data.join()
+    store_detail_data()
 
 
 def get_country_data(url):
@@ -76,7 +76,17 @@ def store_country_data():
                     'cvd_death_rate': item[5]
                 }
             )
-        print('Country data is updated!')
+    with open(os.path.join(STATIC_DIR, 'temp_files/country_codes.csv')) as f:
+        r = csv.reader(f)
+        for data in r:
+            try:
+                c = Country.objects.get(country_code=data[0])
+                c.country_2digits_code = data[1]
+                c.save()
+            except Exception:
+                print('Not match')
+
+    print('Country data is updated!')
 
 
 def get_detail_data(url):
@@ -115,7 +125,7 @@ def store_detail_data():
                 },
             )
             print(item[0] + item[3] + 'done')
-        print('Finished!'+ time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
+        print('Finished!' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
 # if __name__ == '__main__':
 #     task()

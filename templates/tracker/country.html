@@ -21,54 +21,65 @@
 
     </nav>
     <div class="container">
-        <div class="row pt-4 text-center">
+        <div class=" pt-4 text-center">
             {% for data in LatestData %}
-            <div class="col-md-2 panel panel-default ">
-                <div class="panel-body border bg-light">
-                    <h4>
-                        Cases
-                    </h4>
-                    <h4>
-                        {{data.cases}}
-                    </h4>
+            <div class="col-md-3">
+                <div class="row">
+                  <h1>{{data.country.country_name}}</h1>
+                   <p>Data last updated :</p>
                 </div>
             </div>
-            <div class="col-md-2 panel panel-default">
-                <div class="panel-body border bg-light">
-                    <h4>Deaths</h4>
-                    <h4>{{data.deaths}}</h4>
-
-                </div>
-            </div>
-            <div class="col-md-2 panel panel-default  ">
-                <div class="panel-body border bg-light">
-                    <h4>Total Cases</h4>
-                    <h4>{{data.total_cases}}</h4>
-                </div>
-            </div>
-            <div class="col-md-2 panel panel-default ">
-                <div class="panel-body border bg-light ">
-                    <h4>Total Deaths</h4>
-                    <h4>{{data.total_deaths}}</h4>
-                </div>
-            </div>
-            <!-- <div class="col-md-2 panel panel-default ">
+            <div class="row pt-2">
+                <div class="col-md-3">
+                    <div class="card ">
+                        <div class="card-body ">
+                            <h4> {{data.cases}}</h4>
+                            <div class="card-text">New Cases</div>
+                                                          
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>{{data.deaths}}</h4>
+                            <div class="card-text">New Deaths</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>{{data.total_cases}}</h4>
+                            <div class="card-text">Total Cases</div>
+                            
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>{{data.total_deaths}}</h4>
+                            <div class="card-text">Total Deaths</div>
+                           
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-2 panel panel-default ">
                 <div class="panel-body border bg-light ">
                   <h4>Death Rate</h4>
                   <h4>{{LatestData.country.cvd_death_rate}}</h4>
                 </div>
-            </div> -->
-            {% endfor %}
+                </div> -->
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-9">
+                    <div class="row ">
+                        <div id="main" class="col-md-6" style="height:300px;"></div>
+                        <div id="new_case" class="col-md-6" style="height:300px;"></div>
+                    </div>
+                    <div class="row">
+                        <div id="total_death" class="col-md-6" style="height:300px;"></div>
+                        <div id="new_death" class="col-md-6" style="height:300px;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row pt-4">
-            <div id="main" class="col-md-7" style="height:400px;"></div>
-            <div id="new_case" class="col-md-5" style="height:400px;"></div>
-        </div>
-        <div class="row">
-            <div id="total_death" class="col-md-7" style="height:400px;"></div>
-            <div id="new_death" class="col-md-5" style="height:400px;"></div>
-        </div>
-       
+
 
     </div>
     <script type="text/javascript">
@@ -77,13 +88,13 @@
         var newCaseChart = echarts.init(document.getElementById('new_case'));
         var totalDeathChart = echarts.init(document.getElementById('total_death'));
         var newDeathChart = echarts.init(document.getElementById('new_death'));
-       
+
         // console.log(myChart)
         $.get('/tracker/country_detail/{{country_id.country_code}}/', function (data) {
             var date = []
             var total_cases_value = []
             var new_case_value = []
-            var total_deaths_value=[]
+            var total_deaths_value = []
             var new_death_value = []
             console.log(data)
             for (let index = 0; index < data.data.length; index++) {
@@ -91,7 +102,7 @@
                 date[index] = element.date;
                 total_cases_value[index] = element.total_cases;
                 new_case_value[index] = element.cases;
-                total_deaths_value[index] =element.total_deaths;
+                total_deaths_value[index] = element.total_deaths;
                 new_death_value[index] = element.deaths;
 
             }
@@ -113,9 +124,21 @@
                 yAxis: [
                     {
                         type: 'value',
-                        name: 'total cases'
+                        
+                        axisLabel: {
+                formatter: function (value, index) {
+                  if (value >= 1000 && value < 1000000) {
+                    value = value / 1000 + 'K';
+                  } else if (value >= 1000000) {
+                    value = value / 1000000 + 'M'
+                  } else {
+                    value = value;
+                  }
+                  return value
+                }
+              }
                     }
-                    ],
+                ],
                 series: [
                     {
                         name: 'Total Cases',
@@ -139,9 +162,9 @@
                     data: date
                 },
                 yAxis: {
-                        type: 'value',
-                        name: 'new case'
-                    },
+                    type: 'value',
+                    name: 'new case'
+                },
                 series: [
                     {
                         name: 'New Case',
@@ -151,7 +174,7 @@
                     }]
             })
             totalDeathChart.setOption({
-                 title: {
+                title: {
                     text: 'Total Deaths',
                 },
                 tooltip: {
@@ -169,7 +192,7 @@
                         type: 'value',
                         name: 'total deaths'
                     }
-                    ],
+                ],
                 series: [
                     {
                         name: 'Total Deaths',
@@ -194,9 +217,9 @@
                     data: date
                 },
                 yAxis: {
-                        type: 'value',
-                        name: 'new death'
-                    },
+                    type: 'value',
+                    name: 'new death'
+                },
                 series: [
                     {
                         name: 'New Death',

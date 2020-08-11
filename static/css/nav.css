@@ -84,3 +84,17 @@ body {
     .border-bottom {
       border-bottom: 1px solid #e5e5e5;
     }
+
+    .nav-tabs .nav-link{
+      color: #999;
+    }
+
+    .nav-link.active{
+      color: black;
+    }
+    .target{
+      /*  selector label  */
+    }
+    .card-body{
+      padding-top:0px
+    }
