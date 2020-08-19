@@ -2,10 +2,11 @@ import csv
 import json
 import os
 import ssl
+import socket
 import threading
 import time, datetime
 from decimal import Decimal
-import urllib.request
+import urllib
 from urllib.request import urlretrieve
 
 from tracking_board_project.settings import STATIC_DIR
@@ -90,8 +91,12 @@ def store_country_data():
 
 
 def get_detail_data(url):
+
     file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
-    urlretrieve(url, file_path)
+    try:
+        urlretrieve(url, file_path)
+    except:
+        get_detail_data(url)
 
 
 def store_detail_data():
@@ -106,7 +111,7 @@ def store_detail_data():
                 continue
 
             date_format = datetime.datetime.strptime(item[3], '%Y-%m-%d')
-            if date_format.date() < datetime.date.today() or item[4] == '':
+            if date_format.date() < datetime.date.today() - datetime.timedelta(days=4) or item[4] == '':
                 continue
 
             country_code = Country.objects.get(country_code=item[0])

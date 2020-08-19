@@ -6,8 +6,8 @@ from django.template.defaultfilters import slugify
 
 class Country(models.Model):
     country_name = models.CharField(max_length=128, blank=False)
-    country_code = models.SlugField(max_length=10, unique=True, primary_key=True)
-    country_2digits_code = models.CharField(max_length=3,default='ts')
+    country_code = models.CharField(max_length=10, unique=True, primary_key=True)
+    country_2digits_code = models.SlugField(max_length=3,default='ts')
     continent = models.CharField(max_length=128)
     population = models.DecimalField(blank=True, null=True, max_digits=20, decimal_places=0)
     population_density = models.DecimalField(max_digits=20, decimal_places=3)
@@ -32,6 +32,7 @@ class Detail_Data_country(models.Model):
     total_deaths = models.DecimalField(max_digits=20, decimal_places=0)
     deaths_per_million = models.DecimalField(max_digits=20, decimal_places=3)
     total_deaths_per_million = models.DecimalField(max_digits=20, decimal_places=3)
+    modify_time = models.DateTimeField(auto_now=True, blank=True)
 
     class Meta:
         unique_together = ('date', 'country')

@@ -18,27 +18,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
   <script src="http://cdn.highcharts.com.cn/highmaps/modules/map.js"></script>
+  <style>
+
+    .navbar-brand {
+        padding-top: .75rem;
+      padding-bottom: .75rem;
+      font-size: 1rem;
+      background-color: rgba(0, 0, 0, 0);
+      box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 0);
+
+    }
+  </style>
 
 </head>
 
 <body class="bg-light">
-  <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 mr-1 px-3" href="/tracker/"> <img class="" style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
+    <nav class="navbar navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand mr-1 px-3" href="/tracker/"> <img class="" style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
+        <div class="dropdown">
+        <button class="navbar-toggler" data-toggle="dropdown" id="navbarDropdown" aria-expanded="false"aria-haspopup="true"  data-target="#navbarsExample01" aria-controls="navbarsExample01"  >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 
-    <input class="form-control form-control-dark w-100 autocomplete" id="search" type="text" placeholder="Search" data-url="{% url 'tracker:autocomplete'%}">
-    <div class="dropdown">
-    <button class="navbar-toggler" data-toggle="dropdown" id="navbarDropdown" aria-expanded="false"aria-haspopup="true">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+            <a class="dropdown-item" href="/tracker/">Desktop Version</a>
+          </div>
+        </div>
+      </nav>
 
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-
-      <a class="dropdown-item" href="/tracker/m_version/">Mobile Vision</a>
-    </div>
-    </div>
-  
-
-  </nav>
   <div class="container bg-white">
 
       
@@ -110,28 +118,8 @@
           </div>
         </div>
         {% endfor %}
-          <div id="country_list" class="col-md-3" >
-            <!-- <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Top10_Data %}
-                <tr>
-                  <td><a href="{%url 'tracker:country' data.country.country_code %}">{{data.country.country_name}}</a>
-                  </td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table> -->
-
-          </div>
+          <!-- <div id="country_list" class="col-md-3" >
+          </div> -->
           <div class="col-md-3" >
             <div id="new" style="height:250px;">test</div>
             <div id="total" style="height:250px;">test</div>
@@ -142,7 +130,7 @@
       </div>
       <!-- continent data -->
       <div class="tab-pane fade" id="nav-continent">
-        <div class="row">
+        <!-- <div class="row"> -->
           <div class="col-md-3 ">
             {% for continent in Continents %}
             <div class="card" >
@@ -178,45 +166,32 @@
             </div>
             {% endfor %}
           </div>
-          <div class="col-md-9">
-            <select class="custom-select col-md-3" id="continent_select"> 
+          <!-- <div class="col-md-9"> -->
+            <select class="custom-select " id="continent_select"> 
               <option value="cases">New Cases</option>
               <option value="deaths">New Deaths</option>
               <option value="total_cases">Total Cases</option>
               <option value="total_deaths">Total Deaths</option>
             </select>
-            <div class="col-md-12">
+            <div >
               <!-- <div id="continent_bar_chart"  style="height: 300px;">YES</div> -->
               
               <div id='chart'  style=" height: 250px"></div>
 
-            <div id='continent_line_chart' style="height: 300px;"></div>
+            <div id='continent_line_chart' style="height: 250px;"></div>
           </div>
 
-          </div>
-        </div>
+          <!-- </div> -->
+        <!-- </div> -->
       </div>
       <!-- country data -->
       <div class="tab-pane fade" id="nav-country" role="tabpanel" aria-labelledby="nav-country-tab">
+        <form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2 autocomplete"  id="search" type="text" placeholder="Search" data-url="{% url 'tracker:autocomplete'%}">
+            <button class="btn btn-outline-success my-2 my-sm-0" id="searchButton" type="submit">Search</button>
+          </form>
+    
 
-        <nav>
-          <div class="nav nav-tabs justify-content-center pt-4" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link active" id="nav-all-tab" data-toggle="tab" href="#nav-all" role="tab"
-              aria-controls="nav-all" aria-selected="true">All</a>
-            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
-              aria-controls="nav-profile" aria-selected="false">North America</a>
-            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-              aria-controls="nav-contact" aria-selected="false">South America</a>
-            <a class="nav-item nav-link" id="nav-Asia-tab" data-toggle="tab" href="#nav-Asia" role="tab"
-              aria-controls="nav-Asia" aria-selected="false">Asia</a>
-            <a class="nav-item nav-link" id="nav-Europe-tab" data-toggle="tab" href="#nav-Europe" role="tab"
-              aria-controls="nav-Europe" aria-selected="false">Europe</a>
-            <a class="nav-item nav-link" id="nav-Africa-tab" data-toggle="tab" href="#nav-Africa" role="tab"
-              aria-controls="nav-Africa" aria-selected="false">Africa</a>
-            <a class="nav-item nav-link" id="nav-Oceania-tab" data-toggle="tab" href="#nav-Oceania" role="tab"
-              aria-controls="nav-Oceania" aria-selected="false">Oceania</a>
-          </div>
-        </nav>
         <div class="tab-content" id="nav-tabContent">
           <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
             <table class="table ">
@@ -225,213 +200,28 @@
                   <th scope="col">Country</th>
                   <th scope="col">Total Cases</th>
                   <th scope="col">Total Deaths</th>
-                  <th scope="col">New Cases</th>
+                  <!-- <th scope="col">New Cases</th>
                   <th scope="col">New Deaths</th>
                   <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
+                  <th scope="col">Total Deaths<br>per Million</th> -->
 
                 </tr>
               </thead>
               <tbody>
                 {% for data in Detail %}
                 <tr>
-                  <td><a href="{%url 'tracker:country' data.country.country_2digits_code %}">{{data.country.country_name}}</a>
+                  <td><a href="country/{{data.country.country_2digits_code}}">{{data.country.country_name}}</a>
                   </td>
                   <td>{{data.total_cases}}</td>
                   <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
+                  <!-- <td>{{data.cases}}</td>
                   <td>{{data.deaths}}</td>
                   <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
+                  <td>{{data.total_deaths_per_million}}</td> -->
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
-            <!-- <span class="current"> Page {{ Data.number }} of {{ Data.paginator.num_pages }} Total
-                {{ Data.paginator.count }}</span> -->
-          </div>
-          <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'North America'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <!-- <span class="current"> Page {{ Data.number }} of {{ Data.paginator.num_pages }} Total
-                {{ Data.paginator.count }}</span> -->
-          </div>
-          <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'South America'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="tab-pane fade" id="nav-Asia" role="tabpanel" aria-labelledby="nav-Asia-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'Asia'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="tab-pane fade" id="nav-Europe" role="tabpanel" aria-labelledby="nav-Europe-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'Europe'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="tab-pane fade" id="nav-Africa" role="tabpanel" aria-labelledby="nav-Africa-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'Africa'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="tab-pane fade" id="nav-Oceania" role="tabpanel" aria-labelledby="nav-Oceania-tab">
-            <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                  <th scope="col">Cases</th>
-                  <th scope="col">Deaths</th>
-                  <th scope="col">Total Cases <br>per Million</th>
-                  <th scope="col">Total Deaths<br>per Million</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Detail %}
-                <tr>
-                  {% if data.country.continent == 'Oceania'%}
-                  <td>{{data.country.country_name}}</td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                  <td>{{data.cases}}</td>
-                  <td>{{data.deaths}}</td>
-                  <td>{{data.total_cases_per_million}}</td>
-                  <td>{{data.total_deaths_per_million}}</td>
-                  {% endif %}
-                </tr>
-                {% endfor %}
-              </tbody>
             </table>
           </div>
         </div>
@@ -469,18 +259,16 @@
             });
         })
 
-        $("#search").keypress(function (even) {
-          if (even.which == 13) {
-            
-            $.get('/tracker/search/',{'value': $(this).val()},function (data) {
+
+        $('#searchButton').click(function (){
+            $.get('/tracker/search/',{'value': $("#search").val()},function (data) {
               if (data.status == 'success') {
-                window.location.href = '/tracker/country/'+data.value
+                window.location.href = '/tracker/m_version/country/'+data.value
               } else {
                 alert('No results! Please try again')
               }
             })
-          }
-        });
+        })
        </script>
 
 
@@ -602,7 +390,7 @@
 
         var total_chart = echarts.init(document.getElementById('total'));
         var new_chart = echarts.init(document.getElementById('new'));
-        var country_chart = echarts.init(document.getElementById('country_list'));
+        // var country_chart = echarts.init(document.getElementById('country_list'));
 
 
 
@@ -636,50 +424,6 @@
           }
           console.log(country)
 
-          country_chart.setOption({
-            title: {
-              text: label,
-            },
-            tooltip: {
-              trigger: 'axis'
-            },
-            grid: {
-              left: '40%',
-              right: '20%',
-            },
-            xAxis: {
-              type: 'value',
-              position: 'top',
-              boundaryGap: [0, 0.01],
-              axisLabel: { show: false },
-              splitLine: { show: false },
-              axisLine: { show: false },
-              axisTick: { show: false }
-            },
-            yAxis: {
-              type: 'category',
-              data: country,
-              inverse: true,
-            },
-            visualMap: {
-              show: false,
-              inRange: {
-                color: ['#E15457', '#FFFFFF']
-              }
-
-            },
-            series: [
-              {
-                name: '',
-                type: 'bar',
-                data: country_value,
-                label: {
-                  show: true,
-                  position: 'right'
-                },
-
-              }]
-          })
 
           total_chart.setOption({
             title: {
@@ -749,7 +493,7 @@
         window.addEventListener("resize", function () {
           new_chart.resize();
           total_chart.resize();
-          country_chart.resize();
+        //   country_chart.resize();
         });
 
       }
@@ -804,25 +548,70 @@
           // console.log(pie_value)
 
 
+          // barChart.setOption({
+          //   title: {
+          //     text: 'Bar',
+          //   },
+          //   tooltip: {
+          //     trigger: 'axis'
+          //   },
+          //   grid: {
+          //     left: '25%',
+          //     // right: '20%',
+          //   },
+          //   xAxis: {
+          //     type: 'value',
+          //     position: 'top',
+          //     boundaryGap: [0, 0.01],
+          //     axisLabel: { show: false },
+          //     splitLine: { show: false },
+          //     axisLine: { show: false },
+          //     axisTick: { show: false }
+          //   },
+          //   yAxis: {
+          //     type: 'category',
+          //     data: continent,
+          //     inverse: true,
+          //   },
+          //   visualMap: {
+          //     show: false,
+          //     inRange: {
+          //       color: ['#E15457', '#FFFFFF']
+          //     }
+
+          //   },
+          //   series: [
+          //     {
+          //       name: '',
+          //       type: 'bar',
+          //       data: continent_value,
+          //       label: {
+          //         show: true,
+          //         position: 'right'
+          //       },
+
+          //     }]
+          // });
+
           myChart.setOption({
             title: {
               // text: 'Percentage of total cases by continent',
               left: 'center'
             },
-            toolbox: {
-              feature: {
-                saveAsImage: {}
-              }
-            },
+            // toolbox: {
+            //   feature: {
+            //     saveAsImage: {}
+            //   }
+            // },
             legend: {
-              orient: 'vertical',
+              orient: 'horizontal',
               left: 10,
               data: continent
             },
             series: [{
               name: 'Total Cases',
               type: 'pie',
-              radius: '50%',
+              radius: '30%',
               center: ['50%', '50%'],
               label: {
                 normal: {
@@ -831,7 +620,7 @@
                     fontWeight: 600,
                     fontSize: 14
                   },
-                  formatter: '{b}:{c} {d}%'
+                  formatter: '{d}%'
                 }
 
               },
@@ -841,7 +630,7 @@
 
           lineChart.setOption({
             title: {
-              text: 'Line Chart'
+            //   text: 'Line Chart'
             },
             tooltip: {
               trigger: 'axis'
@@ -855,11 +644,11 @@
               bottom: '3%',
               containLabel: true
             },
-            toolbox: {
-              feature: {
-                saveAsImage: {}
-              }
-            },
+            // toolbox: {
+            //   feature: {
+            //     saveAsImage: {}
+            //   }
+            // },
             xAxis: {
               type: 'category',
               boundaryGap: false,
@@ -910,12 +699,12 @@
         $(this).on('shown.bs.tab', function (e) {
           myChart.resize();
           lineChart.resize();
-          barChart.resize();
+        //   barChart.resize();
         });
         window.addEventListener("resize", function () {
           myChart.resize();
           lineChart.resize();
-          barChart.resize();
+        //   barChart.resize();
         });
 
       }

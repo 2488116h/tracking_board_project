@@ -1,92 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Country</title>
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/nav.css">
     <link rel="stylesheet" href="/static/css/autocomplete.css">
-
-
+  
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script src="http://cdn.highcharts.com.cn/highmaps/modules/map.js"></script> -->
+    <style>
 
+        .navbar-brand {
+            padding-top: .75rem;
+          padding-bottom: .75rem;
+          font-size: 1rem;
+          background-color: rgba(0, 0, 0, 0);
+          box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0);
+            background-color: rgba(0, 0, 0, 0);
+    
+        }
+      </style>
 
 </head>
 
 <body>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 mr-1 px-3" href="/tracker/"> <img class="" style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
-    
-        <input class="form-control form-control-dark w-100 autocomplete" id="search" type="text" placeholder="Search" data-url="{% url 'tracker:autocomplete'%}">
+    <nav class="navbar navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand mr-1 px-3" href="/tracker/m_version"> <img style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
         <div class="dropdown">
-        <button class="navbar-toggler" data-toggle="dropdown" id="navbarDropdown" aria-expanded="false"aria-haspopup="true">
+        <button class="navbar-toggler" data-toggle="dropdown" id="navbarDropdown" aria-expanded="false"aria-haspopup="true"  data-target="#navbarsExample01" aria-controls="navbarsExample01"  >
           <span class="navbar-toggler-icon"></span>
         </button>
-    
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-    
-          <a class="dropdown-item" href="/tracker/m_version/">Mobile Vision</a>
+
+            <a class="dropdown-item" href="/tracker/">Desktop Vision</a>
+          </div>
         </div>
-        </div>
-      
-    
       </nav>
     <div class="container">
         <div class=" pt-4 text-center">
             {% for data in LatestData %}
-            <div class="col-md-4 text-left">
+            <div class="text-left">
 
-                <h1>{{data.country.country_name}}</h1>
+                <h5>{{data.country.country_name}}</h5>
                 
                 <p class="text-secondary">Data last updated :{{data.modify_time}}</p>
             </div>
-            <div class="row pt-2">
-                <div class="col-md-3">
-                    <div class="card ">
-                        <div class="card-body ">
-                            <h4> {{data.cases}}</h4>
-                            <div class="card-text">New Cases</div>
+            <!-- <div class=" p-2"> -->
+                    <!-- <div class="card "> -->
+                        <div class="col-xs-12">
+                            <table class="table">
+                                <tr>
+                                   <td>
+                                    <div >New Cases <h5> {{data.cases}}</h5></div>
+                                </td> 
+                                <td>
+                                     <div>New Deaths <h5>{{data.deaths}}</h5></div>
+                                </td>
+                                
+                                </tr>
+                                <tr>
+                                    <td>
+                                    <div >Total Cases<h5>{{data.total_cases}}</h5></div>
+                                </td>
+                                    <td>
+                                        
+                            <div >Total Deaths<h5>{{data.total_deaths}}</h5></div>
+
+                                    </td>
+                                </tr>
+                                
+                            </table>
+                            
+                            
+                           
                                                           
                         </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h4>{{data.deaths}}</h4>
-                            <div class="card-text">New Deaths</div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h4>{{data.total_cases}}</h4>
-                            <div class="card-text">Total Cases</div>
-                            
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h4>{{data.total_deaths}}</h4>
-                            <div class="card-text">Total Deaths</div>
-                           
-                        </div>
-                    </div>
-                    <!-- <div class="col-md-2 panel panel-default ">
-                <div class="panel-body border bg-light ">
-                  <h4>Death Rate</h4>
-                  <h4>{{LatestData.country.cvd_death_rate}}</h4>
-                </div>
-                </div> -->
+                    <!-- </div> -->
+    
+
                     {% endfor %}
                 </div>
 
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="row ">
                         <div id="main" class="col-md-6" style="height:300px;"></div>
                         <div id="new_case" class="col-md-6" style="height:300px;"></div>
@@ -96,20 +99,12 @@
                         <div id="new_death" class="col-md-6" style="height:300px;"></div>
                     </div>
                 </div>
-            </div>
+            <!-- </div> -->
         </div>
 
 
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-    crossorigin="anonymous"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
 
         var totalCaseChart = echarts.init(document.getElementById('main'));
@@ -144,6 +139,9 @@
                 },
                 legend: {
                     data: ['Total Cases']
+                },
+                grid: {
+                 containLabel: true
                 },
                 xAxis: {
                     type: 'category',
@@ -182,6 +180,9 @@
                 tooltip: {
                     trigger: 'axis'
                 },
+                grid: {
+                 containLabel: true
+                },
                 legend: {
                     data: ['New Case']
                 },
@@ -207,6 +208,9 @@
                 },
                 tooltip: {
                     trigger: 'axis'
+                },
+                grid: {
+                 containLabel: true
                 },
                 legend: {
                     data: ['Total Deaths']
@@ -236,6 +240,9 @@
                 },
                 tooltip: {
                     trigger: 'axis'
+                },
+                grid: {
+                 containLabel: true
                 },
                 legend: {
                     data: ['New Death']
