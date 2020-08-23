@@ -115,20 +115,23 @@ def store_detail_data(days):
                 continue
 
             country_code = Country.objects.get(country_code=item[0])
+            try:
 
-            _created = Detail_Data_country.objects.update_or_create(
+             _created = Detail_Data_country.objects.update_or_create(
                 date=date_format, country=country_code,
                 defaults={
                     'total_cases': Decimal(item[4]),
                     'cases': Decimal(item[5]),
-                    'total_deaths': Decimal(item[6]),
-                    'deaths': Decimal(item[7]),
-                    'total_cases_per_million': Decimal(item[8]),
-                    'cases_per_million': Decimal(item[9]),
-                    'total_deaths_per_million': Decimal(item[10]),
-                    'deaths_per_million': Decimal(item[11]),
+                    'total_deaths': Decimal(item[7]),
+                    'deaths': Decimal(item[8]),
+                    'total_cases_per_million': Decimal(item[10]),
+                    'cases_per_million': Decimal(item[11]),
+                    'total_deaths_per_million': Decimal(item[13]),
+                    'deaths_per_million': Decimal(item[14]),
                 },
-            )
+             )
+            except Exception:
+                print(item[0] + item[3]+' updated failed')
             print(item[0] + item[3] + 'done')
         print('Finished!' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
