@@ -25,7 +25,7 @@ def task():
     detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
     detail_data.start()
     detail_data.join()
-    store_detail_data()
+    store_detail_data(2)
 
 
 def get_country_data(url):
@@ -99,7 +99,7 @@ def get_detail_data(url):
         get_detail_data(url)
 
 
-def store_detail_data():
+def store_detail_data(days):
     file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
     with open(file_path, 'r') as csvfile:
         next(csvfile)
@@ -111,7 +111,7 @@ def store_detail_data():
                 continue
 
             date_format = datetime.datetime.strptime(item[3], '%Y-%m-%d')
-            if date_format.date() < datetime.date.today() - datetime.timedelta(days=4) or item[4] == '':
+            if date_format.date() < datetime.date.today() - datetime.timedelta(days=days) or item[4] == '':
                 continue
 
             country_code = Country.objects.get(country_code=item[0])
