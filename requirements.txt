@@ -1,0 +1,16 @@
+certifi==2019.11.28
+chardet==3.0.4
+Django==2.1.5
+django-crontab==0.7.1
+django-registration-redux==2.2
+idna==2.9
+Jinja2==2.11.2
+MarkupSafe==1.1.1
+olefile==0.46
+Pillow==7.0.0
+prettytable==0.7.2
+pyecharts==1.7.1
+pytz==2019.3
+requests==2.23.0
+simplejson==3.17.0
+urllib3==1.25.8

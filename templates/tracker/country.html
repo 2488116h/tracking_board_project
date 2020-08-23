@@ -191,7 +191,19 @@
                 },
                 yAxis: {
                     type: 'value',
-                    name: 'new case'
+                    name: 'new case',
+                    axisLabel: {
+                formatter: function (value, index) {
+                  if (value >= 1000 && value < 1000000) {
+                    value = value / 1000 + 'K';
+                  } else if (value >= 1000000) {
+                    value = value / 1000000 + 'M'
+                  } else {
+                    value = value;
+                  }
+                  return value
+                }
+              }
                 },
                 series: [
                     {
@@ -218,7 +230,19 @@
                 yAxis: [
                     {
                         type: 'value',
-                        name: 'total deaths'
+                        name: 'total deaths',
+                        axisLabel: {
+                formatter: function (value, index) {
+                  if (value >= 1000 && value < 1000000) {
+                    value = value / 1000 + 'K';
+                  } else if (value >= 1000000) {
+                    value = value / 1000000 + 'M'
+                  } else {
+                    value = value;
+                  }
+                  return value
+                }
+              }
                     }
                 ],
                 series: [
@@ -246,7 +270,19 @@
                 },
                 yAxis: {
                     type: 'value',
-                    name: 'new death'
+                    name: 'new death',
+                    axisLabel: {
+                formatter: function (value, index) {
+                  if (value >= 1000 && value < 1000000) {
+                    value = value / 1000 + 'K';
+                  } else if (value >= 1000000) {
+                    value = value / 1000000 + 'M'
+                  } else {
+                    value = value;
+                  }
+                  return value
+                }
+              }
                 },
                 series: [
                     {
