@@ -7,6 +7,7 @@ import threading
 import time, datetime
 from decimal import Decimal
 import urllib
+import pandas as pd
 from urllib.request import urlretrieve
 
 from tracking_board_project.settings import STATIC_DIR
@@ -17,15 +18,16 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def task():
-    # domain = 'https://covid.ourworldindata.org/data/owid-covid-data.json'
-    # thread = threading.Thread(target=get_country_data(domain))
-    # thread.start()
-    # thread.join()
-    # store_country_data()
+    domain = 'https://covid.ourworldindata.org/data/owid-covid-data.json'
+    thread = threading.Thread(target=get_country_data(domain))
+    thread.start()
+    thread.join()
+    store_country_data()
     detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
     detail_data.start()
     detail_data.join()
     store_detail_data(2)
+    # fetch_data("https://raw.githubusercontent.com/canghailan/Wuhan-2019-nCoV/master/Wuhan-2019-nCoV.csv")
 
 
 def get_country_data(url):
@@ -91,7 +93,6 @@ def store_country_data():
 
 
 def get_detail_data(url):
-
     file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
     try:
         urlretrieve(url, file_path)
@@ -117,23 +118,27 @@ def store_detail_data(days):
             country_code = Country.objects.get(country_code=item[0])
             try:
 
-             _created = Detail_Data_country.objects.update_or_create(
-                date=date_format, country=country_code,
-                defaults={
-                    'total_cases': Decimal(item[4]),
-                    'cases': Decimal(item[5]),
-                    'total_deaths': Decimal(item[7]),
-                    'deaths': Decimal(item[8]),
-                    'total_cases_per_million': Decimal(item[10]),
-                    'cases_per_million': Decimal(item[11]),
-                    'total_deaths_per_million': Decimal(item[13]),
-                    'deaths_per_million': Decimal(item[14]),
-                },
-             )
+                _created = Detail_Data_country.objects.update_or_create(
+                    date=date_format, country=country_code,
+                    defaults={
+                        'total_cases': Decimal(item[4]),
+                        'cases': Decimal(item[5]),
+                        'total_deaths': Decimal(item[7]),
+                        'deaths': Decimal(item[8]),
+                        'total_cases_per_million': Decimal(item[10]),
+                        'cases_per_million': Decimal(item[11]),
+                        'total_deaths_per_million': Decimal(item[13]),
+                        'deaths_per_million': Decimal(item[14]),
+                    },
+                )
             except Exception:
-                print(item[0] + item[3]+' updated failed')
+                print(item[0] + item[3] + ' updated failed')
             print(item[0] + item[3] + 'done')
         print('Finished!' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
-# if __name__ == '__main__':
-#     task()
+
+def fetch_data(url):
+    c = pd.read_csv(url)
+    c.to_csv("./data.csv", mode='a')
+
+    print('finined')

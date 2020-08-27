@@ -1,39 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'tracker/base.html' %}
 {% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>COVID-19 TRACKER</title>
-  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/static/css/nav.css">
-  <link rel="stylesheet" href="/static/css/autocomplete.css">
-
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
-  <script src="http://cdn.highcharts.com.cn/highmaps/modules/map.js"></script>
-  <style>
-
-    .navbar-brand {
-        padding-top: .75rem;
-      padding-bottom: .75rem;
-      font-size: 1rem;
-      background-color: rgba(0, 0, 0, 0);
-      box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0);
-        background-color: rgba(0, 0, 0, 0);
-
-    }
-  </style>
-
-</head>
-
-<body class="bg-light">
+{% block body_block %}
     <nav class="navbar navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
         <a class="navbar-brand mr-1 px-3" href="/tracker/"> <img class="" style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
         <div class="dropdown">
@@ -231,23 +200,10 @@
         
       </footer>
     </div>
-    
+  </div> 
+    {% endblock %}
 
-
-
-
-    <!-- JavaScript -->
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
-
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-      crossorigin="anonymous"></script>
-      
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.js"></script>
-
+  {% block footer %}
       <script>
         $(document).ready(function(){
         var searchUrl = $('#search').attr('data-url');
@@ -315,7 +271,7 @@
       }
 
       function loadMap(params, label) {
-        var url = '/static/js/map.js';
+        var url = '/static/js/worldmap.js';
         loadScript(url, function () {
           var mapdata = Highcharts.maps['custom/world'];
           var data = [];
@@ -716,7 +672,4 @@
 
     </script>
 
-
-</body>
-
-</html>
+{% endblock %}

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>COVID-19 TRACKER</title>
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="/static/css/nav.css">
+  <link rel="stylesheet" href="/static/css/autocomplete.css">
+
+  {% block header %}
+  {% endblock %}
+</head>
+
+<body class="bg-light">
+  {% block body_block %}
+  {% endblock %}
+
+    
+
+
+
+
+    <!-- JavaScript -->
+   
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/jquery(3.5.1).min.js"></script>
+    <script src="/static/js/highcharts.js"></script>
+    <script src="/static/js/map.js"></script>
+  
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+      
+    <script src="/static/js/jquery-ui.js"></script>
+
+    <!-- <script>
+        $(document).ready(function(){
+        var searchUrl = $('#search').attr('data-url');
+
+        $.get(searchUrl, {'key': ''},  function(response) {
+              $(".autocomplete").autocomplete({
+              source: response.countryList
+              });
+            });
+        })
+
+        $("#search").keypress(function (even) {
+          if (even.which == 13) {
+            
+            $.get('/tracker/search/',{'value': $(this).val()},function (data) {
+              if (data.status == 'success') {
+                window.location.href = '/tracker/country/'+data.value
+              } else {
+                alert('No results! Please try again')
+              }
+            })
+          }
+        });
+       </script>
+
+
+    <script>
+      $(document).ready(function (){
+        // Global Trends Tab    
+        loadMap("cases", "New Cases");
+        loadCharts("cases", "New Cases");        
+      })
+
+      
+
+
+      $("#nav-data").find("a").click(function () {
+        var data = $(this).attr("id")
+        var label = $(this).attr('aria-label')
+        loadMap(data, label)
+        loadCharts(data, label)
+        console.log($(this).attr("id"))
+        console.log($(this).attr('aria-label'))
+      })
+
+
+
+      //loading Script function
+      function loadScript(url, callback) {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        if (script.readyState) {  //IE
+          script.onreadystatechange = function () {
+            if (script.readyState == "loaded" ||
+              script.readyState == "complete") {
+              script.onreadystatechange = null;
+              callback();
+            }
+          };
+        } else {  //Others
+          script.onload = function () {
+            callback();
+          };
+        }
+        script.src = url;
+        document.getElementsByTagName("head")[0].appendChild(script);
+      }
+
+      function loadMap(params, label) {
+        var url = '/static/js/worldmap.js';
+        loadScript(url, function () {
+          var mapdata = Highcharts.maps['custom/world'];
+          var data = [];
+
+          $.getJSON('{% url 'tracker:json_data' %}', function (info) {
+            // var params = 'cases'
+            for (let index = 0; index < info.map_data.length; index++) {
+              const element = info.map_data[index];
+              if (element[params] > 0) {
+                data[index] = {
+                  'id': element.code,
+                  'value': parseInt(element[params])
+                };
+              }
+
+            }
+            // console.log(data)
+
+            $('#map').highcharts('Map', {
+              title: {
+                text: label + ' Global Map'
+              },
+              mapNavigation: {
+                enabled: true,
+                buttonOptions: {
+                  verticalAlign: 'bottom',
+                  align: 'right'
+                }
+              },
+              colorAxis: {
+
+                min: 1,
+                type: 'logarithmic',
+                minColor: '#FFFFFF',
+                maxColor: '#800000',
+                stops: [
+                  [0, '#FFFFFF'],
+                  [0.5, '#F08080'],
+                  [1, '#800000']
+                ]
+              },
+              series: [{
+                data: data,
+                mapData: mapdata,
+                joinBy: 'id',
+                name: label,
+                states: {
+                  hover: {
+                    color: '#a4edba'
+                  }
+                },
+                dataLabels: {
+                  enabled: false,
+                  format: '{point.name}'
+                }
+              }]
+            });
+          });
+        })
+
+      }
+
+
+      var date = []
+      var total_value = []
+      var new_value = []
+      var country = []
+      var country_value = []
+      function loadCharts(params, label) {
+
+        // World & Country list Charts
+
+        var total_chart = echarts.init(document.getElementById('total'));
+        var new_chart = echarts.init(document.getElementById('new'));
+        var country_chart = echarts.init(document.getElementById('country_list'));
+
+
+
+        $.getJSON('{% url 'tracker:json_data' %}', function (data) {
+
+          $('#location').text(function (){
+          return data.location.city + ','+ data.location.country
+        })
+          $('#location').click(function (){
+            window.location.href = "/tracker/country/"+data.location.countryCode;
+          })
+
+          console.log(data)
+
+
+          // world data chart
+          for (let index = 0; index < data.world_data.length; index++) {
+            const element = data.world_data[index];
+            date[index] = element.date;
+            total_value[index] = element[params + '_per_million'];
+            new_value[index] = element[params];
+
+          }
+
+          // country list
+          for (let index = 0; index < data.country_data.length; index++) {
+            const element = data.country_data[index];
+            country[index] = element.country__country_name;
+            country_value[index] = element[params];
+
+          }
+          console.log(country)
+
+          country_chart.setOption({
+            title: {
+              text: label,
+            },
+            tooltip: {
+              trigger: 'axis'
+            },
+            grid: {
+              left: '40%',
+              right: '20%',
+            },
+            xAxis: {
+              type: 'value',
+              position: 'top',
+              boundaryGap: [0, 0.01],
+              axisLabel: { show: false },
+              splitLine: { show: false },
+              axisLine: { show: false },
+              axisTick: { show: false }
+            },
+            yAxis: {
+              type: 'category',
+              data: country,
+              inverse: true,
+            },
+            visualMap: {
+              show: false,
+              inRange: {
+                color: ['#E15457', '#FFFFFF']
+              }
+
+            },
+            series: [
+              {
+                name: '',
+                type: 'bar',
+                data: country_value,
+                label: {
+                  show: true,
+                  position: 'right'
+                },
+
+              }]
+          })
+
+          total_chart.setOption({
+            title: {
+              text: label + ' per Million',
+            },
+            tooltip: {
+              trigger: 'axis'
+            },
+            grid: {
+              left: '15%'
+            },
+            xAxis: {
+              type: 'category',
+              data: date
+            },
+            yAxis: {
+              type: 'value',
+            },
+            series: [
+              {
+                name: label + '/M',
+                type: 'line',
+                smooth: true,
+                data: total_value
+              }]
+
+          })
+          new_chart.setOption({
+            title: {
+              text: label,
+            },
+            tooltip: {
+              trigger: 'axis'
+            },
+            grid: {
+              left: '15%'
+            },
+            xAxis: {
+              type: 'category',
+              data: date
+            },
+            yAxis: {
+              type: 'value',
+              axisLabel: {
+                formatter: function (value, index) {
+                  if (value >= 1000 && value < 1000000) {
+                    value = value / 1000 + 'K';
+                  } else if (value >= 1000000) {
+                    value = value / 1000000 + 'M'
+                  } else {
+                    value = value;
+                  }
+                  return value
+                }
+              }
+            },
+            series: [
+              {
+                name: label,
+                type: 'bar',
+                data: new_value
+
+              }]
+          })
+
+        })
+        window.addEventListener("resize", function () {
+          new_chart.resize();
+          total_chart.resize();
+          country_chart.resize();
+        });
+
+      }
+
+
+      // View by Continent Tab
+
+      $("#nav-continent-tab").click(function () {
+        
+        load_continent_charts($('#continent_select option:selected').val())
+      });
+
+      $('#continent_select').change(function () {
+        load_continent_charts($(this).children('option:selected').val())
+        
+      })
+
+      
+
+      function load_continent_charts(params) {
+        var myChart = echarts.init(document.getElementById('chart'));
+        var lineChart = echarts.init(document.getElementById('continent_line_chart'));
+        // var barChart = echarts.init(document.getElementById('continent_bar_chart'));
+        // console.log(barChart);
+
+        var continent = ['Africa', 'Asia', 'Europe', 'North America','Oceania', 'South America']
+        var continent_value = []
+        var pie_value =[]
+        var value = { 'Africa': [], 'Asia': [], 'Europe': [], 'South America': [], 'North America': [], 'Oceania': [] }
+
+
+        $.getJSON('{% url 'tracker:continent_data' %}', function (data) {
+          console.log(data)
+
+          for (let index = 0; index < data.data_line.length; index++) {
+            const element = data.data_line[index];
+            value[element['country__continent']].push(element[params])
+
+          }
+
+          for (let index = 0; index < data.data_pie.length; index++) {
+            const element = data.data_pie[index];
+            continent_value.push(element[params]);
+            pie_value.push({
+              'name':element.country__continent,
+              'value':element[params]
+            })
+            
+          }
+
+          console.log(continent_value)
+          // console.log(pie_value)
+
+
+          myChart.setOption({
+            title: {
+              // text: 'Percentage of total cases by continent',
+              left: 'center'
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {}
+              }
+            },
+            legend: {
+              orient: 'vertical',
+              left: 10,
+              data: continent
+            },
+            series: [{
+              name: 'Total Cases',
+              type: 'pie',
+              radius: '50%',
+              center: ['50%', '50%'],
+              label: {
+                normal: {
+                  show: true,
+                  textStyle: {
+                    fontWeight: 600,
+                    fontSize: 14
+                  },
+                  formatter: '{b}:{c} {d}%'
+                }
+
+              },
+              data: pie_value
+            }]
+          })
+
+          lineChart.setOption({
+            title: {
+              text: 'Line Chart'
+            },
+            tooltip: {
+              trigger: 'axis'
+            },
+            legend: {
+              data: continent
+            },
+            grid: {
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
+              containLabel: true
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {}
+              }
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: date
+            },
+            yAxis: {
+              type: 'value'
+            },
+            series: [
+              {
+                name: 'Africa',
+                type: 'line',
+                data: value['Africa']
+              },
+              {
+                name: 'Asia',
+                type: 'line',
+                data: value['Asia']
+              },
+              {
+                name: 'Europe',
+                type: 'line',
+                data: value['Europe']
+              },
+              {
+                name: 'North America',
+                type: 'line',
+                data: value['North America']
+              },
+              {
+                name: 'Oceania',
+                type: 'line',
+                data: value['Oceania']
+              },
+              {
+                name: 'South America',
+                type: 'line',     
+                data: value['South America']
+              }
+            ]
+
+
+          })
+
+
+        });
+
+        $(this).on('shown.bs.tab', function (e) {
+          myChart.resize();
+          lineChart.resize();
+          barChart.resize();
+        });
+        window.addEventListener("resize", function () {
+          myChart.resize();
+          lineChart.resize();
+          barChart.resize();
+        });
+
+      }
+
+
+    </script> -->
+{% block footer %}
+{% endblock %}
+
+</body>
+
+</html>

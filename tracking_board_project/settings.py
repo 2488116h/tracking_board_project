@@ -26,7 +26,7 @@ SECRET_KEY = 'ognkgfy2say$3h*gxsvns&4a&@jk(%%75*svky(z2rm0f!%64f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['caren.pythonanywhere.com']
+ALLOWED_HOSTS = ['caren.pythonanywhere.com','127.0.0.1']
 
 # Application definition
 
