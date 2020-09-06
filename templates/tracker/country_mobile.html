@@ -1,6 +1,6 @@
 {% extends 'tracker/base.html' %}
 {% load static %}
-
+{% load humanize %}
 {% block body_block %}
     <nav class="navbar navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
         <a class="navbar-brand mr-1 px-3" href="/tracker/m_version"> <img style="width: 30px; height: 30px;" src="{% static 'images/logo.png' %}" > COVID-19 TRACKER</a>
@@ -10,7 +10,7 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 
-            <a class="dropdown-item" href="/tracker/">Desktop Vision</a>
+            <a class="dropdown-item" href="/tracker/">Desktop Version</a>
           </div>
         </div>
       </nav>
@@ -23,26 +23,24 @@
                 
                 <p class="text-secondary">Data last updated :{{data.modify_time}}</p>
             </div>
-            <!-- <div class=" p-2"> -->
-                    <!-- <div class="card "> -->
                         <div class="col-xs-12">
                             <table class="table">
                                 <tr>
                                    <td>
-                                    <div >New Cases <h5> {{data.cases}}</h5></div>
+                                    <div >New Cases <h5> {{data.cases|intcomma}}</h5></div>
                                 </td> 
                                 <td>
-                                     <div>New Deaths <h5>{{data.deaths}}</h5></div>
+                                     <div>New Deaths <h5>{{data.deaths|intcomma}}</h5></div>
                                 </td>
                                 
                                 </tr>
                                 <tr>
                                     <td>
-                                    <div >Total Cases<h5>{{data.total_cases}}</h5></div>
+                                    <div >Total Cases<h5>{{data.total_cases|intcomma}}</h5></div>
                                 </td>
                                     <td>
                                         
-                            <div >Total Deaths<h5>{{data.total_deaths}}</h5></div>
+                            <div >Total Deaths<h5>{{data.total_deaths|intcomma}}</h5></div>
 
                                     </td>
                                 </tr>
@@ -68,13 +66,14 @@
                         <div id="new_death" class="col-md-6" style="height:300px;"></div>
                     </div>
                 </div>
-            <!-- </div> -->
+
         </div>
 
 
     </div>
     {% endblock %}
     {% block footer %}
+    <!-- script for detail charts -->
      <script type="text/javascript">
 
         var totalCaseChart = echarts.init(document.getElementById('main'));
@@ -236,7 +235,7 @@
             })
 
         }, 'json')
-      //  console.log(myChart)
+  
 
 
     </script>

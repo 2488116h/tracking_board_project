@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import ssl
+import logging
 import socket
 import threading
 import time, datetime
@@ -18,89 +19,41 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def task():
-    domain = 'https://covid.ourworldindata.org/data/owid-covid-data.json'
-    thread = threading.Thread(target=get_country_data(domain))
-    thread.start()
-    thread.join()
-    store_country_data()
+    logging.info('Task Start... ')
     detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
     detail_data.start()
     detail_data.join()
     store_detail_data(2)
-    # fetch_data("https://raw.githubusercontent.com/canghailan/Wuhan-2019-nCoV/master/Wuhan-2019-nCoV.csv")
-
-
-def get_country_data(url):
-    response = urllib.request.urlopen(url)
-    decode_data = json.loads(response.read())
-    file_path = os.path.join(STATIC_DIR, 'temp_files/country.csv')
-
-    with open(file_path, 'w') as csvfile:
-        writer = csv.writer(csvfile, lineterminator='\n')
-
-        for item in decode_data:
-            code = item
-            continent = None
-            try:
-                continent = decode_data[item]['continent']
-            except KeyError:
-                print('world data')
-            country = decode_data[item]['location']
-            population = decode_data[item]['population']
-            population_density = 0
-            try:
-                population_density = decode_data[item]['population_density']
-            except KeyError:
-                print('There is no population density for ' + country)
-
-            cvd_death_rate = 0
-            try:
-                cvd_death_rate = decode_data[item]['cvd_death_rate']
-            except KeyError:
-                print('There is no covid death rate for ' + country)
-
-            writer.writerow([code, continent, country, population, population_density, cvd_death_rate])
-        print('Country data download finished!')
-        csvfile.close()
-
-
-def store_country_data():
-    file_path = os.path.join(STATIC_DIR, 'temp_files/country.csv')
-    with open(file_path, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for item in reader:
-            _created = Country.objects.update_or_create(
-                country_code=item[0],
-                defaults={
-                    'country_name': item[2],
-                    'continent': item[1],
-                    'population': item[3],
-                    'population_density': item[4],
-                    'cvd_death_rate': item[5]
-                }
-            )
-    with open(os.path.join(STATIC_DIR, 'temp_files/country_codes.csv')) as f:
-        r = csv.reader(f)
-        for data in r:
-            try:
-                c = Country.objects.get(country_code=data[0])
-                c.country_2digits_code = data[1]
-                c.save()
-            except Exception:
-                print('Not match')
-
-    print('Country data is updated!')
 
 
 def get_detail_data(url):
+    """
+    Fetch the daily data from the api
+    :param url: address of daily data
+    :return:
+    """
     file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
     try:
         urlretrieve(url, file_path)
     except:
-        get_detail_data(url)
+        fetch_daily_data()
 
+def fetch_daily_data():
+    """
+    To use pandas read data and output to csv file
+    The method is a backup plan in case failing to download data directly
+    :return:
+    """
+    url = 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
+    c = pd.read_csv(url)
+    c.to_csv(os.path.join(STATIC_DIR, 'temp_files/detail.csv'), index=False)
 
 def store_detail_data(days):
+    """
+    To store daily data into the database
+    :param days: update the particular days' date
+    :return:
+    """
     file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
     with open(file_path, 'r') as csvfile:
         next(csvfile)
@@ -135,10 +88,3 @@ def store_detail_data(days):
                 print(item[0] + item[3] + ' updated failed')
             print(item[0] + item[3] + 'done')
         print('Finished!' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-
-
-def fetch_data(url):
-    c = pd.read_csv(url)
-    c.to_csv("./data.csv", mode='a')
-
-    print('finined')

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_crontab',
     'tracker',
+    'django.contrib.humanize',
 
 ]
 
@@ -122,5 +123,5 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 # Crontab: the task will execute every 4 h
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
-    ('0 */4 * * *', 'tracker.crawler.task','>>/Users/huangyushan/Desktop/test.log')
+    ('7 10 * * *', 'tracker.crawler.task','>>'+os.path.join(BASE_DIR, 'crontab.log'))
 ]
