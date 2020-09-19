@@ -90,25 +90,6 @@
         </div>
         {% endfor %}
           <div id="country_list" class="col-md-3" >
-            <!-- <table class="table">
-              <thead class="thead">
-                <tr>
-                  <th scope="col">Country</th>
-                  <th scope="col">Total Cases</th>
-                  <th scope="col">Total Deaths</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in Top10_Data %}
-                <tr>
-                  <td><a href="{%url 'tracker:country' data.country.country_code %}">{{data.country.country_name}}</a>
-                  </td>
-                  <td>{{data.total_cases}}</td>
-                  <td>{{data.total_deaths}}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table> -->
 
           </div>
           <div class="col-md-3" >
@@ -165,7 +146,6 @@
               <option value="total_deaths">Total Deaths</option>
             </select>
             <div class="col-md-12">
-              <!-- <div id="continent_bar_chart"  style="height: 300px;">YES</div> -->
               
               <div id='chart'  style=" height: 250px"></div>
 
@@ -257,8 +237,6 @@
                 {% endfor %}
               </tbody>
             </table>
-            <!-- <span class="current"> Page {{ Data.number }} of {{ Data.paginator.num_pages }} Total
-                {{ Data.paginator.count }}</span> -->
           </div>
           <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
             <table class="table">

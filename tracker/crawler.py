@@ -9,6 +9,8 @@ import time, datetime
 from decimal import Decimal
 import urllib
 import pandas as pd
+import requests
+from requests.exceptions import ConnectionError
 from urllib.request import urlretrieve
 
 from tracking_board_project.settings import STATIC_DIR
@@ -17,36 +19,39 @@ from tracker.models import Country, Detail_Data_country
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
+URL1 = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
+URL2 = 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
+
 
 def task():
     logging.info('Task Start... ')
-    detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
+    session = requests.Session()
+    urls = [URL1, URL2]
+    file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
+    detail_data = threading.Thread(target=get_detail_data, args=(session, urls, file_path))
     detail_data.start()
     detail_data.join()
     store_detail_data(2)
 
 
-def get_detail_data(url):
+def get_detail_data(session, urls, filepath):
     """
     Fetch the daily data from the api
     :param url: address of daily data
     :return:
     """
-    file_path = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
-    try:
-        urlretrieve(url, file_path)
-    except:
-        fetch_daily_data()
+    for url in urls:
+        try:
+            resp = session.get(url, timeout=5)
+        except ConnectionError:
+            print("Failed to get from {}".format(url))
+            continue
+        else:
+            with open(filepath, 'wb') as f:
+                f.write(resp.content)
+            return True
+    return False
 
-def fetch_daily_data():
-    """
-    To use pandas read data and output to csv file
-    The method is a backup plan in case failing to download data directly
-    :return:
-    """
-    url = 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
-    c = pd.read_csv(url)
-    c.to_csv(os.path.join(STATIC_DIR, 'temp_files/detail.csv'), index=False)
 
 def store_detail_data(days):
     """
@@ -88,3 +93,4 @@ def store_detail_data(days):
                 print(item[0] + item[3] + ' updated failed')
             print(item[0] + item[3] + 'done')
         print('Finished!' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    return True

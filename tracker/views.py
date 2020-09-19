@@ -100,7 +100,7 @@ def chart(request):
                                                                       total_deaths=Sum('total_deaths'),
                                                                       cases=Sum('cases'),
                                                                       deaths=Sum('deaths'))
-    # latest_date = Detail_Data_country.objects.all().values('date').order_by('-date')[:1]
+
     q = c.filter(date=_latest_date[0]['date'])
     pie_query = q.values('country__continent').annotate(total_cases=Sum('total_cases'),
                                                         total_deaths=Sum('total_deaths'),
@@ -136,7 +136,6 @@ def country_detail(request, country_id_slug):
     data = {}
     end_date = datetime.date.today()
     start_date = end_date - datetime.timedelta(days=300)
-    # print(request)
     query = Detail_Data_country.objects.filter(country_id__country_2digits_code=country_id_slug,
                                                date__range=(start_date, end_date)).order_by(
         'date')

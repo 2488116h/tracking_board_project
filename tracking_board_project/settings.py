@@ -120,8 +120,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR, ]
 
-# Crontab: the task will execute every 4 h
+# Crontab: the task will execute at 8:00 am everyday
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
-    ('7 10 * * *', 'tracker.crawler.task','>>'+os.path.join(BASE_DIR, 'crontab.log'))
+    ('0 8 * * *', 'tracker.crawler.task','>>'+os.path.join(BASE_DIR, 'crontab.log'))
 ]

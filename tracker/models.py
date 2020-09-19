@@ -1,17 +1,16 @@
 from django.db import models
-from django.template.defaultfilters import slugify
 
-
-# Create your models here.
 
 class Country(models.Model):
+    """
+    Data table for country
+    """
     country_name = models.CharField(max_length=128, blank=False)
     country_code = models.CharField(max_length=10, unique=True, primary_key=True)
     country_2digits_code = models.SlugField(max_length=3, default='ts')
     continent = models.CharField(max_length=128)
     population = models.DecimalField(blank=True, null=True, max_digits=20, decimal_places=0)
     population_density = models.DecimalField(max_digits=20, decimal_places=3)
-    # cvd_death_rate = models.DecimalField(max_digits=20, decimal_places=3)
 
     def save(self, *args, **kwargs):
         super(Country, self).save(*args, **kwargs)
@@ -21,6 +20,9 @@ class Country(models.Model):
 
 
 class Detail_Data_country(models.Model):
+    """
+    Data table for daily data
+    """
     date = models.DateField(blank=False)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     cases = models.DecimalField(max_digits=20, decimal_places=0)

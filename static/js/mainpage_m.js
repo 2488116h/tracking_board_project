@@ -221,7 +221,6 @@
     window.addEventListener("resize", function () {
       new_chart.resize();
       total_chart.resize();
-    //   country_chart.resize();
     });
 
   }
