@@ -9,7 +9,7 @@ import threading
 import csv
 from tracker.models import Country
 from tracking_board_project.settings import STATIC_DIR
-from tracker.crawler import store_detail_data, daily_data
+from tracker.crawler import store_detail_data,get_detail_data
 
 
 def populate():
@@ -21,7 +21,10 @@ def populate():
     thread = threading.Thread(target=store_country_data())
     thread.start()
     thread.join()
-    daily_data()
+
+    detail_data = threading.Thread(target=get_detail_data('https://covid.ourworldindata.org/data/owid-covid-data.csv'))
+    detail_data.start()
+    detail_data.join()
     # store detail data of recent 400 days
     store_detail_data(400)
 

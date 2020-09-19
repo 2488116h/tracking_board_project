@@ -1,12 +1,11 @@
 import os
 from django.test import TestCase
-from requests import Session
 from datetime import datetime
 from tracker.models import Country, Detail_Data_country
 from django.urls import reverse
 from django.db.models.query import QuerySet
 from tracking_board_project.settings import STATIC_DIR
-from .crawler import get_detail_data, store_detail_data
+from .crawler import get_detail_data
 
 
 class TrackerTests(TestCase):
@@ -79,19 +78,14 @@ class TrackerTests(TestCase):
         """
         Test the crawl function  whether it is working
         """
-        session = Session()
-        urls = ['https://covid.ourworldindata.org/data/owid-covid-data.csv',
-                'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv']
+
+        urls = ['https://covid.ourworldindata.org/data/owid-covid-data.csv']
         now = datetime.now()
         detail_csv = os.path.join(STATIC_DIR, 'temp_files/detail.csv')
-        ret = get_detail_data(session, urls, detail_csv)
+        ret = get_detail_data(urls)
         self.assertTrue(ret)
         csv_fileinfo = os.stat(detail_csv)
         create_time = datetime.fromtimestamp(csv_fileinfo.st_ctime)
         self.assertGreater(create_time, now)
 
-    def test_store_detail_data(self):
-        """
-        Test the data store process is working or not
-        """
-        self.assertTrue(store_detail_data(2))
+
