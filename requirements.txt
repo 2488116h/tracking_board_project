@@ -27,5 +27,5 @@ six==1.15.0
 sqlparse==0.3.0
 tracker==0.1.1
 Unidecode==1.1.1
-urllib3==1.25.8
+urllib3==1.26.5
 zipp==3.1.0
